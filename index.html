@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario (Lista Doblemente Enlazada)</title>
+    <script src="productoLED.js"></script>
+    <script src="inventarioLED.js"></script>
+</head>
+<body>
+    <div>
+        <form id="form">
+            <label for="txtCod">Código:
+                <input type="number" id="txtCod">
+            </label>
+
+            <label for="txtNom">Nombre:
+                <input type="text" id="txtNom">
+            </label>
+
+            <label for="txtCan">Cantidad:
+                <input type="number" id="txtCan">
+            </label>
+
+            <label for="txtCos">Costo:
+                <input type="number" id="txtCos">
+            </label>
+
+            <br><br>
+
+            <button type="button" id="btnAdd">Agregar</button>
+            <button type="button" id="btnBuscar">Buscar</button>
+            <button type="button" id="btnEliminar">Eliminar</button>
+            <button type="button" id="btnExtPrim">Extraer Primero</button>
+            <button type="button" id="btnExtUlt">Extraer Último</button>
+            <button type="button" id="btnLis">Listar</button>
+            <button type="button" id="btnLisInv">Listar Inverso</button>
+            <button type="reset" id="btnCan">Limpiar</button>
+        </form>
+
+        <div id="Detalles"></div>
+    </div>
+
+    <script>
+        const inv = new Inventario();
+        const divDetalles = document.getElementById('Detalles');
+
+        function obtenerProducto() {
+            let codigo = document.getElementById('txtCod').value;
+            let nombre = document.getElementById('txtNom').value;
+            let cantidad = document.getElementById('txtCan').value;
+            let costo = document.getElementById('txtCos').value;
+            return new Producto(codigo, nombre, cantidad, costo);
+        }
+
+        document.getElementById('btnAdd').addEventListener('click', () => {
+            const producto = obtenerProducto();
+            if (!producto.codigo) {
+                divDetalles.innerHTML = `<p>Ingrese un código válido.</p>`;
+                return;
+            }
+            if (inv.agregar(producto)) {
+                divDetalles.innerHTML = `<p>Producto agregado: ${producto.nombre} (Código: ${producto.codigo})</p>`;
+            } else {
+                divDetalles.innerHTML = `<p>El producto con el código ${producto.codigo} ya existe.</p>`;
+            }
+        });
+
+        document.getElementById('btnBuscar').addEventListener('click', () => {
+            const codigo = document.getElementById('txtCod').value;
+            const producto = inv.buscar(codigo);
+            if (producto) {
+                divDetalles.innerHTML = `<h4>Producto Encontrado:</h4>` + producto.infoHTML();
+            } else {
+                divDetalles.innerHTML = `<p>No se encontró ningún producto con el código ${codigo}.</p>`;
+            }
+        });
+
+        document.getElementById('btnEliminar').addEventListener('click', () => {
+            const codigo = document.getElementById('txtCod').value;
+            const eliminado = inv.eliminar(codigo);
+            if (eliminado) {
+                divDetalles.innerHTML = `<p>Producto eliminado: ${eliminado.nombre} (Código: ${eliminado.codigo})</p>`;
+            } else {
+                divDetalles.innerHTML = `<p>No se pudo eliminar. El código ${codigo} no existe.</p>`;
+            }
+        });
+
+        document.getElementById('btnExtPrim').addEventListener('click', () => {
+            const extraido = inv.extraerPrimero();
+            if (extraido) {
+                divDetalles.innerHTML = `<h4>Primer elemento extraído:</h4>` + extraido.infoHTML();
+            } else {
+                divDetalles.innerHTML = `<p>El inventario está vacío.</p>`;
+            }
+        });
+
+        document.getElementById('btnExtUlt').addEventListener('click', () => {
+            const extraido = inv.extraerUltimo();
+            if (extraido) {
+                divDetalles.innerHTML = `<h4>Último elemento extraído:</h4>` + extraido.infoHTML();
+            } else {
+                divDetalles.innerHTML = `<p>El inventario está vacío.</p>`;
+            }
+        });
+
+        document.getElementById('btnLis').addEventListener('click', () => {
+            divDetalles.innerHTML = `<h4>Listado de Productos (Ascendente):</h4>` + inv.listar();
+        });
+
+        document.getElementById('btnLisInv').addEventListener('click', () => {
+            divDetalles.innerHTML = `<h4>Listado de Productos (Inverso):</h4>` + inv.listarInverso();
+        });
+
+        document.getElementById('btnCan').addEventListener('click', () => {
+            divDetalles.innerHTML = '';
+        });
+    </script>
+</body>
+</html>
